@@ -1,0 +1,31 @@
+{
+  "name": "@xml-next/parser",
+  "version": "0.1.0",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/types/index.d.ts",
+  "author": "pakholeung37@gmail.com",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint src",
+    "clean": "rimraf dist",
+    "build:cjs": "cross-env BABEL_ENV=cjs babel ./src -d dist/cjs --extensions '.js,.ts,.tsx'",
+    "build:esm": "cross-env babel ./src -d dist/esm --extensions '.js,.ts,.tsx'",
+    "build:types": "tsc --declaration --emitDeclarationOnly --declarationDir dist/types",
+    "build": "yarn clean && concurrently yarn:build:*",
+    "test": "jest --no-cache"
+  },
+  "devDependencies": {
+    "@xml-tools/parser": "^1.0.0",
+    "@xml-tools/ast": "^5.0.5"
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "2eee81f701056e5429f10e14e4b2f818a42cb1c7"
+}

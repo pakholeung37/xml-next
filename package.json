@@ -1,0 +1,109 @@
+{
+  "name": "xml-next",
+  "version": "0.1.0",
+  "description": "xml-tools alternatives",
+  "author": "pakholeung37@gmail.com",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "husky:install": "husky install",
+    "bootstrap": "lerna bootstrap",
+    "storybook:react": "yarn workspace @sandpack-monaco/react run storybook",
+    "lint": "turbo run lint",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "prepublishOnly": "turbo run prepublish"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-proposal-class-properties": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-typescript": "^7.16.0",
+    "@babel/runtime": "^7.16.3",
+    "@changesets/changelog-github": "0.4.2",
+    "@changesets/cli": "2.18.1",
+    "@commitlint/cli": "14.1.0",
+    "@commitlint/config-conventional": "14.1.0",
+    "@jest/types": "27.4.2",
+    "@manypkg/cli": "0.19.1",
+    "@preconstruct/cli": "^2.1.5",
+    "@swc-node/jest": "^1.3.5",
+    "@types/edit-json-file": "^1.6.1",
+    "@types/jest": "^27.0.3",
+    "@types/lodash": "^4.14.0",
+    "@types/mkdirp": "1.0.2",
+    "@types/node": "^16.11.12",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "babel-eslint": "10.1.0",
+    "bundlesize": "0.18.1",
+    "chalk": "4.1.2",
+    "chart.js": "^3.6.0",
+    "commitizen": "4.2.4",
+    "concurrently": "^6.5.1",
+    "cross-env": "7.0.3",
+    "cz-conventional-changelog": "3.3.0",
+    "dotenv-cli": "4.1.0",
+    "edit-json-file": "1.6.0",
+    "eslint": "^8.5.0",
+    "eslint-config-airbnb-typescript": "^16.0.0",
+    "eslint-config-prettier": "^8.0.0",
+    "eslint-config-react": "^1.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-testing-library": "^5.0.0",
+    "execa": "5.1.1",
+    "framer-motion": "^4.0.0",
+    "husky": "^7.0.4",
+    "inquirer": "7.3.3",
+    "jest": "27.3.1",
+    "jest-environment-jsdom": "^27.3.1",
+    "jest-watch-typeahead": "1.0.0",
+    "lerna": "^4.0.0",
+    "lint-staged": "11.2.6",
+    "listr": "0.14.3",
+    "lodash": "^4.17.21",
+    "mkdirp": "^1.0.4",
+    "plop": "2.7.6",
+    "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "10.4.0",
+    "turbo": "^1.0.23",
+    "typescript": "^4.3.5"
+  },
+  "workspaces": [
+    "packages/*",
+    "examples/*",
+    "tooling/*",
+    "website"
+  ],
+  "turbo": {
+    "pipeline": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          "dist/**",
+          "lib/**"
+        ]
+      },
+      "lint": {
+        "outputs": []
+      },
+      "test": {
+        "dependsOn": [],
+        "outputs": []
+      },
+      "prepublish": {
+        "dependsOn": [
+          "lint",
+          "build",
+          "test"
+        ]
+      }
+    }
+  }
+}
