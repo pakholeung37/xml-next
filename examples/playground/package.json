@@ -4,7 +4,5 @@
   "main": "index.js",
   "license": "MIT",
   "private": true,
-  "dependencies": {
-    "@sandpack-monaco/react": "^0.4.6"
-  }
+  "dependencies": {}
 }
