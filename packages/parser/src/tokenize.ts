@@ -19,9 +19,9 @@ const enum State {
   ClosingOpenTag,
   OpeningSpecial,
   OpeningDoctype,
+  OpeningProlog,
   OpeningNormalComment,
   InNormalComment,
-  InShortComment,
   ClosingNormalComment,
   ClosingTag,
 }
@@ -69,6 +69,7 @@ function makeCodePoints(input: string) {
 }
 
 const doctype = makeCodePoints('!doctype')
+const prolog = makeCodePoints('?xml')
 
 const enum Chars {
   _S = 32, // ' '
@@ -155,8 +156,8 @@ export function tokenize(input: string): IToken[] {
       case State.InNormalComment:
         parseNormalComment()
         break
-      case State.InShortComment:
-        parseShortComment()
+      case State.OpeningProlog:
+        parseOpeningProlog()
         break
       case State.ClosingNormalComment:
         parseClosingNormalComment()
@@ -178,7 +179,7 @@ export function tokenize(input: string): IToken[] {
     case State.InValueDq:
     case State.ClosingOpenTag:
     case State.InNormalComment:
-    case State.InShortComment:
+    case State.OpeningProlog:
     case State.ClosingNormalComment:
       emitToken(TokenKind.Literal)
       break
@@ -188,13 +189,13 @@ export function tokenize(input: string): IToken[] {
     case State.AfterOpenTag:
       break
     case State.OpeningSpecial:
-      emitToken(TokenKind.OpenTag, State.InShortComment)
+      emitToken(TokenKind.OpenTag, State.OpeningProlog)
       break
     case State.OpeningDoctype:
       if (index - sectionStart === doctype.length) {
         emitToken(TokenKind.OpenTag)
       } else {
-        emitToken(TokenKind.OpenTag, void 0, sectionStart + 1)
+        emitToken(TokenKind.OpenTag, undefined, sectionStart + 1)
         emitToken(TokenKind.Literal)
       }
       break
@@ -202,7 +203,7 @@ export function tokenize(input: string): IToken[] {
       if (index - sectionStart === 2) {
         emitToken(TokenKind.OpenTag)
       } else {
-        emitToken(TokenKind.OpenTag, void 0, sectionStart + 1)
+        emitToken(TokenKind.OpenTag, undefined, sectionStart + 1)
         emitToken(TokenKind.Literal)
       }
       break
@@ -223,10 +224,8 @@ function emitToken(kind: TokenKind, newState = state, end = index) {
     value = value.toLowerCase()
   }
   if (
-    !(
-      (kind === TokenKind.Literal || kind === TokenKind.Whitespace) &&
-      end === sectionStart
-    )
+    (kind !== TokenKind.Literal && kind !== TokenKind.Whitespace) ||
+    end !== sectionStart
   ) {
     // empty literal should be ignored
     tokens.push({ type: kind, start: sectionStart, end, value })
@@ -268,9 +267,9 @@ function parseBeforeOpenTag() {
     sectionStart = index
   } else if (char === Chars.Qm) {
     // <?
-    // treat as short comment
+    state = State.OpeningProlog
     sectionStart = index
-    emitToken(TokenKind.OpenTag, State.InShortComment)
+    // emitToken(TokenKind.OpenTag, State.OpeningProlog)
   } else {
     // <>
     // any other chars covert to normal state
@@ -303,7 +302,7 @@ function parseAfterOpenTag() {
   } else if (char === Chars.Eq) {
     // <div ...=...
     emitToken(TokenKind.Whitespace)
-    emitToken(TokenKind.AttrValueEq, void 0, index + 1)
+    emitToken(TokenKind.AttrValueEq, undefined, index + 1)
   } else if (char === Chars.Sq) {
     // <div ...'...
     emitToken(TokenKind.Whitespace, State.InValueSq)
@@ -369,7 +368,7 @@ function parseOpeningSpecial() {
       state = State.OpeningDoctype
       break
     default:
-      emitToken(TokenKind.OpenTag, State.InShortComment)
+      emitToken(TokenKind.OpenTag, State.OpeningProlog)
       break
   }
 }
@@ -385,12 +384,12 @@ function parseOpeningDoctype() {
     }
   } else if (char === Chars.Gt) {
     // <!DOCT>
-    emitToken(TokenKind.OpenTag, void 0, sectionStart + 1)
+    emitToken(TokenKind.OpenTag, undefined, sectionStart + 1)
     emitToken(TokenKind.Literal)
     emitToken(TokenKind.OpenTagEnd)
   } else if (doctype.lower[offset] !== char && doctype.upper[offset] !== char) {
     // <!DOCX...
-    emitToken(TokenKind.OpenTag, State.InShortComment, sectionStart + 1)
+    emitToken(TokenKind.OpenTag, State.OpeningProlog, sectionStart + 1)
   }
 }
 
@@ -399,7 +398,7 @@ function parseOpeningNormalComment() {
     // <!--
     emitToken(TokenKind.OpenTag, State.InNormalComment, index + 1)
   } else {
-    emitToken(TokenKind.OpenTag, State.InShortComment, sectionStart + 1)
+    emitToken(TokenKind.OpenTag, State.OpeningProlog, sectionStart + 1)
   }
 }
 
@@ -410,11 +409,22 @@ function parseNormalComment() {
   }
 }
 
-function parseShortComment() {
-  if (char === Chars.Gt) {
-    // <! ... >
+function parseOpeningProlog() {
+  offset = index - sectionStart
+  if (offset === prolog.length) {
+    if (isWhiteSpace()) {
+      emitToken(TokenKind.OpenTag, State.AfterOpenTag)
+    } else {
+      unexpected()
+    }
+  } else if (char === Chars.Gt) {
+    // <?xml?>
+    emitToken(TokenKind.OpenTag, undefined, sectionStart + 1)
     emitToken(TokenKind.Literal)
     emitToken(TokenKind.OpenTagEnd)
+  } else if (doctype.lower[offset] !== char && doctype.upper[offset] !== char) {
+    // <!DOCX...
+    emitToken(TokenKind.OpenTag, State.OpeningProlog, sectionStart + 1)
   }
 }
 
@@ -426,7 +436,7 @@ function parseClosingNormalComment() {
       emitToken(TokenKind.OpenTagEnd)
     } else if (char === Chars.Cl) {
       // <!-- xxx ---
-      emitToken(TokenKind.Literal, void 0, sectionStart + 1)
+      emitToken(TokenKind.Literal, undefined, sectionStart + 1)
     } else {
       // <!-- xxx --x
       state = State.InNormalComment

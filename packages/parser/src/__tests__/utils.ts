@@ -1,14 +1,13 @@
 import { SyntaxKind, XMLAstNode } from '../types'
 import { forEach } from 'lodash'
 import { expect } from 'chai'
-import { accept } from '../index'
-import { XMLAstVisitor, XMLTextContent } from '@xml-tools/ast'
+import { XMLAstVisitor, XMLTextContent, accept } from '@xml-tools/ast'
 
 export function modifyAstForAssertions(astNode: XMLAstNode) {
   // Avoid comparing cyclic structures
-  accept(astNode, parentRemoverVisitor)
+  accept(astNode as any, parentRemoverVisitor)
   // Reduce verbosity of assertions
-  accept(astNode, positionReducerVisitor)
+  accept(astNode as any, positionReducerVisitor)
 }
 
 /**
@@ -65,12 +64,14 @@ function reduceNodePoseInfo(node: { position: any; syntax: any }) {
   })
 }
 
-function reducePositionInfo(pos: {
-  startColumn: any
-  endColumn: any
-  startLine: any
-  endLine: any
-}) {
+function reducePositionInfo(
+  pos: {
+    startColumn?: any
+    endColumn?: any
+    startLine?: any
+    endLine?: any
+  } = {},
+) {
   delete pos.startColumn
   delete pos.endColumn
   delete pos.startLine
@@ -78,7 +79,7 @@ function reducePositionInfo(pos: {
 }
 
 export function assertParentPropsAreValid(astNode: XMLAstNode) {
-  accept(astNode, parentPropsValidatorVisitor as any)
+  accept(astNode as any, parentPropsValidatorVisitor as any)
 }
 
 const parentPropsValidatorVisitor: XMLAstVisitor = {

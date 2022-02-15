@@ -223,7 +223,7 @@ function parseOpenTag() {
         tag.subElements = []
         pushTagChain(tag)
       } else {
-        tag.subElements = undefined
+        tag.subElements = []
       }
       break
     } else if (state === OpenTagState.BeforeAttr) {
@@ -328,7 +328,7 @@ export function parse(input: string, options?: ParseOptions): XMLAstNode {
     index++
   }
   const _node = nodes[0]
-  root.rootElement = _node as any
+  root.rootElement = _node as XMLElement
   init()
 
   return root
