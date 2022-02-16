@@ -100,8 +100,7 @@
       "prepublish": {
         "dependsOn": [
           "lint",
-          "build",
-          "test"
+          "build"
         ]
       }
     }
