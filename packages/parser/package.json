@@ -1,6 +1,6 @@
 {
   "name": "@xml-tools-next/parser",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
@@ -16,14 +16,13 @@
     "test": "jest --no-cache"
   },
   "devDependencies": {
-    "@xml-tools/parser": "^1.0.0",
-    "@xml-tools/ast": "^5.0.5"
+    "@xml-tools/ast": "^5.0.5",
+    "@xml-tools/parser": "^1.0.0"
   },
   "dependencies": {
     "entities": "^3.0.1"
   },
   "files": [
-
     "dist",
     "package.json",
     "README.md"
