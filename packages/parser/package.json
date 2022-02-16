@@ -19,9 +19,7 @@
     "@xml-tools/ast": "^5.0.5",
     "@xml-tools/parser": "^1.0.0"
   },
-  "dependencies": {
-    "entities": "^3.0.1"
-  },
+  "dependencies": {},
   "files": [
     "dist",
     "package.json",

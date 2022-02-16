@@ -1,5 +1,4 @@
-import { BinTrieFlags, determineBranch } from 'entities/lib/decode'
-import xmlDecodeTree from 'entities/lib/generated/decode-data-xml'
+import { xmlDecodeTree, determineBranch, BinTrieFlags } from './entities'
 
 const enum CharCodes {
   Tab = 0x9, // "\t"

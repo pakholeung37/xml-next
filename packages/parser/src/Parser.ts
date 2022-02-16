@@ -1,6 +1,5 @@
 import Tokenizer, { Callbacks, QuoteType } from './Tokenizer'
-import decodeCodePoint from 'entities/lib/decode_codepoint'
-
+import { decodeCodePoint } from './entities'
 const formTags = new Set([
   'input',
   'option',
