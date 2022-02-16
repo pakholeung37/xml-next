@@ -217,6 +217,7 @@ export class Parser implements Callbacks {
   private readonly lowerCaseTagNames: boolean
   private readonly lowerCaseAttributeNames: boolean
   private readonly tokenizer: Tokenizer
+  private readonly options: ParserOptions
 
   private readonly buffers: string[] = []
   private bufferOffset = 0
@@ -225,11 +226,9 @@ export class Parser implements Callbacks {
   /** Indicates whether the parser has finished running / `.end` has been called. */
   private ended = false
 
-  constructor(
-    cbs?: Partial<Handler> | null,
-    private readonly options: ParserOptions = {},
-  ) {
+  constructor(cbs?: Partial<Handler> | null, options: ParserOptions = {}) {
     this.cbs = cbs ?? {}
+    this.options = options
     this.lowerCaseTagNames = options.lowerCaseTags ?? !options.xmlMode
     this.lowerCaseAttributeNames =
       options.lowerCaseAttributeNames ?? !options.xmlMode

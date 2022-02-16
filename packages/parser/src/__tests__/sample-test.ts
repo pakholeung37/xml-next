@@ -29,7 +29,6 @@ function executeSampleTest(dirPath: string, _assertNoErrors: boolean) {
     const expectedOutput = buildAst(cst as any, tokenVector)
     sanitize(expectedOutput as any)
     modifyAstForAssertions(expectedOutput as unknown as XMLAstNode)
-    console.log(JSON.stringify(expectedOutput, null, 2))
     expect(ast).to.deep.equal(expectedOutput)
   })
 }

@@ -111,9 +111,9 @@ export function sanitize(ast: XMLAstNode): XMLAstNode {
   if (innerAst.position) {
     delete innerAst.position
   }
-  // if (innerAst.syntax) {
-  //   delete innerAst.syntax
-  // }
+  if (innerAst.syntax) {
+    delete innerAst.syntax
+  }
   if (innerAst.textContents) {
     delete innerAst.textContents
   }

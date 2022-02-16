@@ -1,9 +1,5 @@
-import {
-  htmlDecodeTree,
-  xmlDecodeTree,
-  BinTrieFlags,
-  determineBranch,
-} from 'entities/lib/decode'
+import { BinTrieFlags, determineBranch } from 'entities/lib/decode'
+import xmlDecodeTree from 'entities/lib/generated/decode-data-xml'
 
 const enum CharCodes {
   Tab = 0x9, // "\t"
@@ -172,17 +168,19 @@ export default class Tokenizer {
   private readonly xmlMode: boolean
   private readonly decodeEntities: boolean
   private readonly entityTrie: Uint16Array
+  private readonly cbs: Callbacks
 
   constructor(
     {
       xmlMode = false,
       decodeEntities = true,
     }: { xmlMode?: boolean; decodeEntities?: boolean },
-    private readonly cbs: Callbacks,
+    cbs: Callbacks,
   ) {
     this.xmlMode = xmlMode
+    this.cbs = cbs
     this.decodeEntities = decodeEntities
-    this.entityTrie = xmlMode ? xmlDecodeTree : htmlDecodeTree
+    this.entityTrie = xmlMode ? xmlDecodeTree : new Uint16Array(0)
   }
 
   public reset(): void {
