@@ -2,9 +2,11 @@ import { expect } from 'chai'
 import { partialRight } from 'lodash'
 import { readFileSync } from 'fs'
 import { resolve, basename } from 'path'
+import { parse as toolparse } from '@xml-tools/parser'
+import { buildAst } from '@xml-tools/ast'
 import {
   modifyAstForAssertions,
-  // assertParentPropsAreValid,
+  assertParentPropsAreValid,
   sanitize,
 } from './utils'
 import { parse } from '../index'
@@ -15,16 +17,19 @@ function executeSampleTest(dirPath: string, _assertNoErrors: boolean) {
     const inputPath = resolve(dirPath, 'input.xml')
     const inputText = readFileSync(inputPath).toString('utf8')
     const simpleNewLinesInput = inputText.replace(/\r\n/g, '\n')
-    const ast = parse(simpleNewLinesInput)
+    const { ast } = parse(simpleNewLinesInput)
     // if (assertNoErrors === true) {
     //   expect(lexErrors).to.be.empty
     //   expect(parseErrors).to.be.empty
     // }
-    // assertParentPropsAreValid(ast as unknown as XMLAstNode)
+    assertParentPropsAreValid(ast as unknown as XMLAstNode)
     modifyAstForAssertions(ast as unknown as XMLAstNode)
     sanitize(ast)
-    const expectedOutput = require(resolve(dirPath, 'output.js')).ast
-    sanitize(expectedOutput)
+    const { cst, tokenVector } = toolparse(inputText)
+    const expectedOutput = buildAst(cst as any, tokenVector)
+    sanitize(expectedOutput as any)
+    modifyAstForAssertions(expectedOutput as unknown as XMLAstNode)
+    console.log(JSON.stringify(expectedOutput, null, 2))
     expect(ast).to.deep.equal(expectedOutput)
   })
 }

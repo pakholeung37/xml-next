@@ -1,4 +1,4 @@
-import { SyntaxKind, XMLAstNode } from '../types'
+import { SyntaxType, XMLAstNode } from '../types'
 import { forEach } from 'lodash'
 import { expect } from 'chai'
 import { XMLAstVisitor, XMLTextContent, accept } from '@xml-tools/ast'
@@ -92,7 +92,7 @@ const parentPropsValidatorVisitor: XMLAstVisitor = {
   },
   visitXMLElement: (node: any) => {
     const parent = node.parent
-    if (parent.type === SyntaxKind.XMLDocument) {
+    if (parent.type === SyntaxType.XMLDocument) {
       expect(parent.rootElement).to.eql(node)
     } else {
       expect(parent.subElements).to.include(node)
@@ -111,11 +111,18 @@ export function sanitize(ast: XMLAstNode): XMLAstNode {
   if (innerAst.position) {
     delete innerAst.position
   }
-  if (innerAst.syntax) {
-    delete innerAst.syntax
+  // if (innerAst.syntax) {
+  //   delete innerAst.syntax
+  // }
+  if (innerAst.textContents) {
+    delete innerAst.textContents
+  }
+  if (innerAst.namespaces) {
+    delete innerAst.namespaces
   }
   if (innerAst.prolog) {
-    delete innerAst.prolog
+    sanitize(innerAst.prolog)
+    // delete innerAst.prolog
   }
   if (innerAst.rootElement) {
     sanitize(innerAst.rootElement)

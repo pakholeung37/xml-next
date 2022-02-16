@@ -29,14 +29,14 @@ export interface XMLToken extends SourcePosition {
   image: string
 }
 export interface XMLDocument {
-  type: SyntaxKind.XMLDocument
+  type: SyntaxType.XMLDocument
   prolog?: XMLProlog
   rootElement: XMLElement | InvalidSyntax
   position: SourcePosition
 }
 
 export interface XMLProlog {
-  type: SyntaxKind.XMLProlog
+  type: SyntaxType.XMLProlog
   parent: XMLDocument
   position: SourcePosition
   attributes: XMLPrologAttribute[]
@@ -49,7 +49,7 @@ export type Prefix = string | DefaultNS
 export type Uri = string
 
 export interface XMLElement {
-  type: SyntaxKind.XMLElement
+  type: SyntaxType.XMLElement
   parent: XMLElement | XMLDocument | null
 
   namespaces: Record<Prefix, Uri>
@@ -66,11 +66,11 @@ export interface XMLElement {
   position: SourcePosition
 }
 
-declare interface XMLTextContent {
-  type: SyntaxKind.XMLTextContent
-  parent: XMLElement
-
+export interface XMLTextContent {
+  type: SyntaxType.XMLTextContent
+  parent: XMLElement | null
   text: string | InvalidSyntax
+  position: SourcePosition
 }
 
 export interface XMLAttributeBase {
@@ -88,8 +88,8 @@ export interface XMLAttributeBase {
 }
 
 export interface XMLAttribute extends XMLAttributeBase {
-  type: SyntaxKind.XMLAttribute
-  parent: XMLElement
+  type: SyntaxType.XMLAttribute
+  parent: XMLElement | null
 }
 
 /**
@@ -99,8 +99,8 @@ export interface XMLAttribute extends XMLAttributeBase {
  * is not relevant.
  */
 export interface XMLPrologAttribute extends XMLAttributeBase {
-  type: SyntaxKind.XMLPrologAttribute
-  parent: XMLProlog
+  type: SyntaxType.XMLPrologAttribute
+  parent: XMLProlog | null
 }
 
 export type XMLAstNode =
@@ -123,7 +123,7 @@ export type InvalidSyntax = null
  * @desc types.ts
  */
 
-export enum SyntaxKind {
+export enum SyntaxType {
   XMLDocument = 'XMLDocument',
   XMLElement = 'XMLElement',
   XMLProlog = 'XMLProlog',
@@ -131,45 +131,3 @@ export enum SyntaxKind {
   XMLAttribute = 'XMLAttribute',
   XMLTextContent = 'XMLTextContent',
 }
-
-export interface IBaseNode {
-  startOffset: number
-  endOffset: number
-}
-
-export interface IText extends IBaseNode {
-  type: SyntaxKind.XMLTextContent
-  value: string
-}
-
-export interface IAttributeValue extends IBaseNode {
-  value: string
-  quote: "'" | '"' | undefined
-}
-
-export interface IAttribute extends IBaseNode {
-  type: SyntaxKind.XMLAttribute
-  key: string | InvalidSyntax
-  // Semantic Value: Would not include the quotes!
-  value: string | InvalidSyntax
-}
-
-export interface ITag extends IBaseNode {
-  type: SyntaxKind.XMLElement
-  // original open tag, <Div id="id">
-  open: IText
-  // lower case tag name, div
-  name: string
-  attributes: XMLAttribute[]
-  subElements:
-    | Array<ITag | IText> // with close tag
-    | undefined // self closed
-    | null // EOF before open tag end
-  // original close tag, </DIV >
-  close:
-    | IText // with close tag
-    | undefined // self closed
-    | null // EOF before end or without close tag
-}
-
-export type INode = XMLAstNode

@@ -6,4 +6,4 @@ xml-tools alternatives for parsing to the same ast.
 
 | Package                                  |
 | ---------------------------------------- |
-| [@xml-next/parser](packages/parser) |
+| [@xml-tools-next/parser](packages/parser) |

@@ -1,11 +1,25 @@
-import { XMLAstVisitor } from '@xml-tools/ast'
-import { XMLAstNode } from './types'
+import { Parser } from './Parser'
+import { XMLDocument } from './types'
+import { XMLHandler } from './XMLHandler'
 
-export * from './types'
-export * from './tokenize'
-export * from './parse'
-export * from './walk'
+export function parse(xmlContent: string): {
+  ast: XMLDocument
+  errors: Error[]
+} {
+  let result: any
+  let errors: Error[] = []
+  const handler = new XMLHandler((error, ast) => {
+    if (error) {
+      // Handle error
+      errors = [error]
+    } else {
+      // Parsing completed, do something
+      result = ast
+    }
+  })
 
-export function accept(_node: XMLAstNode, _visitor: XMLAstVisitor): void {
-  return
+  const parser = new Parser(handler, { xmlMode: true })
+  parser.write(xmlContent)
+  parser.end()
+  return { ast: result, errors }
 }
